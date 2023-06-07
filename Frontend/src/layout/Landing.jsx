@@ -6,6 +6,7 @@ import { useMediaQuery } from "./../Hooks/mediaQuery"
 import { useEffect, useMemo } from "react"
 import { retriveData, save } from "../utils/localStorage"
 import { Navigate } from "react-router-dom"
+import { API } from "../../variables"
 export const Landing = () => {
     const [password, changePassword] = useState("")
     const [email, changeEmail] = useState("")
@@ -46,6 +47,7 @@ export const Landing = () => {
                         setDisable(false)
                         save("userPt", jsonResponse.body.user)
                         setSaveUser(jsonResponse.body.user)
+                        setUser(jsonResponse.body.user)
                         // setSaveUser(!saveUser)
                     }
                 } else {
@@ -66,11 +68,11 @@ export const Landing = () => {
     useEffect(() => {
         if (currentAction == "Sign in") {
             // console.log("try to sign in");
-            fetcher("http://192.168.137.1:3500/user/login", { email, password })
+            fetcher(`${API}/user/login`, { email, password })
         }
         if (currentAction == "Sign Up") {
             // console.log("try to sign up");
-            fetcher("http://192.168.137.1:3500/user/register", { email, password })
+            fetcher(`${API}/user/register`, { email, password })
         }
     }, [hit])
 

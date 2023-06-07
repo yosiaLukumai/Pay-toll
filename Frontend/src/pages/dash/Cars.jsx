@@ -6,6 +6,7 @@ import { retriveData, save } from "../../utils/localStorage"
 import { Button } from "../../components/Button"
 import { useEffect } from "react"
 import { Loops } from "./loop"
+import { API } from "../../../variables"
 export const Cars = () => {
     const [error, setError] = useState("")
     const [hit, setHit] = useState(false)
@@ -37,7 +38,7 @@ export const Cars = () => {
         try {
             setError("")
             console.log("running setting of the amount");
-            let url = `http://192.168.137.1:3500/user/carregister/${retriveData("userPt")._id}/${plateNo}/${model}"`
+            let url = `${API}/user/carregister/${retriveData("userPt")._id}/${plateNo}/${model}"`
             const data = await fetch(url)
             const resp = await data.json()
             if (resp.success) {

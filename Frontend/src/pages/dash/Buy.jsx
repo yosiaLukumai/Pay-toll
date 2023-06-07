@@ -4,6 +4,7 @@ import { useState } from "react"
 import { retriveData, save } from "../../utils/localStorage"
 import { Button } from "../../components/Button"
 import { useEffect } from "react"
+import { API } from "../../../variables"
 export const Buy = () => {
     const [amount, changeAmount] = useState("")
     const [error, setError] = useState("")
@@ -20,7 +21,7 @@ export const Buy = () => {
         try {
             setError("")
             console.log("running setting of the amount");
-            let url = `http://192.168.137.1:3500/user/addAmount/${retriveData("userPt")._id}/${amount}"`
+            let url = `${API}/user/addAmount/${retriveData("userPt")._id}/${amount}"`
             const data = await fetch(url)
             const resp = await data.json()
             if (resp.success) {
