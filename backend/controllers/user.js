@@ -1,6 +1,8 @@
 const userModel = require("../models/users");
 const createOutput = require("../utils").createOutput;
 const utils = require("../utils");
+// const io = require("./../sockets").get()
+const Socket = require("../index")
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -121,14 +123,24 @@ const deductAmount = async (req, res) => {
     const id = req.params.id;
     const user = await userModel.findById(id);
     if (user) {
-      const amountReduced =
-        parseFloat(user.amount) - parseFloat(req.params.amount);
+      const amountReduced = parseFloat(user.amount) - parseFloat(req.params.amount);
       const updated = await userModel.updateOne(
         { _id: id },
         { amount: amountReduced }
       );
       if (updated) {
-        return res.json(createOutput(true, "saved"));
+        const saveUser = await userModel.findById(id)
+        // io.on("connect", (socket)=> {
+          // console.log("---------------------", id)
+          // console.log(Socket.Socket);
+        // Socket.Socket.on("connect", (socket)=> {
+        //   console.log("trying ");
+        //   socket.emit("deduct", saveUser)
+        // })
+        Socket.Socket.sockets.emit("deduct", saveUser)
+        // })
+        // io.emit("emit", saveUser)
+        return res.json(createOutput(true, saveUser));
       } else {
         return res.json(createOutput(true, "failed to save"));
       }
@@ -136,6 +148,7 @@ const deductAmount = async (req, res) => {
       return res.json(createOutput(true, "No Detail"));
     }
   } catch (error) {
+    console.log(error);
     return res.json(createOutput(false, error.message, true));
   }
 };
@@ -234,3 +247,4 @@ module.exports = {
   getAmount,
   searchPlate
 };
+
