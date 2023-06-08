@@ -5,8 +5,8 @@ import { useState } from "react"
 import { useMediaQuery } from "./../Hooks/mediaQuery"
 import { useEffect, useMemo } from "react"
 import { retriveData, save } from "../utils/localStorage"
-import { Navigate } from "react-router-dom"
-import { API } from "../../variables"
+import { Navigate, useNavigate } from "react-router-dom"
+import { BaseUrl } from "../variables"
 export const Landing = () => {
     const [password, changePassword] = useState("")
     const [email, changeEmail] = useState("")
@@ -16,18 +16,16 @@ export const Landing = () => {
     let screenSize = useMediaQuery()
     let [clicked, setClicked] = useState(0)
     const [hit, setHit] = useState(false)
-    const [saveUser, setSaveUser] = useState(false)
-    const [user, setUser] = useState(retriveData("userPt"))
-    const [data, setData] = useState(null)
+    // const [saveUser, setSaveUser] = useState(false)
+    const [user, setUser] = useState(null)
+    // const [data, setData] = useState(null)
 
-   useMemo(()=> {
-        if(data) {
-            save("userPt", data)
-            setTimeout(()=> {
-                setUser(data=> setData(data))
-            }, 200)
-        }
-    }, [saveUser])
+    // useEffect(()=> {
+    //     if(data) {
+    //         setUser(data)
+    //     }
+    // }, [saveUser])
+    const navigate = useNavigate()
     const fetcher = async (url, payload) => {
         try {
             const response = await fetch(url, {
@@ -38,17 +36,15 @@ export const Landing = () => {
                 body: JSON.stringify(payload)
             })
             const jsonResponse = await response.json();
-            console.log(jsonResponse);
             if (jsonResponse.success) {
                 if (currentAction == "Sign in") {
                     if (jsonResponse.success) {
-                        setData(jsonResponse.body.user)
-                        setError("")
-                        setDisable(false)
                         save("userPt", jsonResponse.body.user)
-                        setSaveUser(jsonResponse.body.user)
-                        setUser(jsonResponse.body.user)
-                        // setSaveUser(!saveUser)
+                        // setData(jsonResponse.body.user)
+                        // setError("")
+                        // setDisable(false)
+                        // setUser(jsonResponse.body.user)
+                        navigate(`/auth/${jsonResponse.body.user?._id}`)
                     }
                 } else {
                     setError("Account registered")
@@ -64,15 +60,22 @@ export const Landing = () => {
             console.log(error);
         }
     }
-
+    useEffect(()=> {
+        // console.log("---once---");
+            const user=(retriveData("userPt"))
+            if(user) {
+                setUser(user)
+            }
+    }, [])
     useEffect(() => {
+        // console.log("----hit---");
         if (currentAction == "Sign in") {
             // console.log("try to sign in");
-            fetcher(`${API}/user/login`, { email, password })
+            fetcher(`${BaseUrl}/user/login`, { email, password })
         }
         if (currentAction == "Sign Up") {
             // console.log("try to sign up");
-            fetcher(`${API}/user/register`, { email, password })
+            fetcher(`${BaseUrl}/user/register`, { email, password })
         }
     }, [hit])
 

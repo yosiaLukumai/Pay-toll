@@ -19,7 +19,7 @@ const router  = createBrowserRouter([
     errorElement:<NotFound />
   }, {
     path: "/auth/:id",
-    element:<Protected isSignedIn={user}><DashBoard/></Protected>,
+    element:<Protected isSignedIn={retriveData("userPt")}><DashBoard/></Protected>,
     errorElement: <NotFound/>,
     children:[
       {

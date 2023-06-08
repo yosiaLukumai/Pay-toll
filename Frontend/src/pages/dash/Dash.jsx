@@ -5,6 +5,8 @@ import { Button } from "./../../components/Button"
 import { Link, Navigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { retriveData, save } from "../../utils/localStorage"
+import { io } from "socket.io-client"
+import { SocketUrl } from "../../variables"
 export default function Dash() {
     const [logouts, setLogout] = useState(false)
     const [user, setUser] = useState(retriveData("userPt"))
@@ -12,14 +14,42 @@ export default function Dash() {
         save("userPt", null)
         setLogout(true)
     }
+    useEffect(() => {
+        // const datas = async () => {
+        //     try {
+        //         const url = `http://localhost:3500/user/deduct/${user?._id}/10`
+        //         console.log(url);
+        //         const data = await fetch(url)
+        //         console.log(data.json());
+        //     } catch (error) {
+        //         console.log(error.message);
+        //     }
+        // }
+        try {
+            const socket = io(SocketUrl)
+            socket.on("connect", () => console.log(socket.id))
+            socket.on("deduct", (data)=> {
+                // if(data.){}
+                save("userPt", data)
+                setUser(data)
+            })
+        } catch (error) {
+            console.log("Error------")
+        }
+        // datas()
+
+        // socket.on("deduction", (user)=> {
+        //     console.log(user);
+        // })
+    }, [])
     const callMe = () => {
         return
     }
     return (<>
 
-{
-    logouts ? <Navigate to="/" replace /> :""
-}
+        {
+            logouts ? <Navigate to="/" replace /> : ""
+        }
 
         <div style={{ marginTop: "1rem" }}></div>
         <div className="dashIcon">
@@ -32,7 +62,7 @@ export default function Dash() {
             {user?.amount} <span style={{ color: "hsla(279, 40%, 15%, 1)" }}>Tsh</span>
         </div>
         <div className="padTop"></div>
-        <div className=" row">
+        <div className="container row">
             <div className="col">
                 <Link to="Credit">
                     <Button name="Credit" actionCalled={() => callMe()} fontSize="1.7rem" width="9rem" height="3rem" color="hsla(216, 28%, 20%, 1)" fontWeight="bolder" backgroundColor="hsla(43, 59%, 52%, 0.7)" radius="9px" border="none" />
@@ -45,7 +75,7 @@ export default function Dash() {
             </div>
 
         </div>
-        <div className=" row">
+        <div className="container row">
             <div className="col">
                 <Link to="info">
                     <Button name="Info" actionCalled={() => callMe()} fontSize="1.7rem" width="9rem" height="3rem" color="hsla(216, 28%, 20%, 1)" fontWeight="bolder" backgroundColor="hsla(43, 59%, 52%, 0.7)" radius="9px" border="none" />
